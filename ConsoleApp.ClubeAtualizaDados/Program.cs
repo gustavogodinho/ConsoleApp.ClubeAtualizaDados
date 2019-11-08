@@ -25,13 +25,15 @@ namespace ConsoleApp.ClubeAtualizaDados
             listaPessoas.ForEach(item =>
             {
 
+                /* http://clubecore-staging.convenia.com.br/  d8ec2e40-294a-11e9-9724-f11bc9c05a54*/
+
                 // 1 /clube/v1/authenticate/{tokenEmpresa}  - retornar Token 
 
                 // 2 /clube/v1/company/{tokenEmpresa}/user - atualiza pessoa
 
 
 
-                
+
             });
 
 
