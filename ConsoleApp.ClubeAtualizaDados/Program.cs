@@ -7,12 +7,37 @@ namespace ConsoleApp.ClubeAtualizaDados
 {
     public class Program
     {
-        private static IConfiguration _iconfiguration;
+        private static IConfiguration _contexto;
+
+
 
         static void Main(string[] args)
         {
             GetAppSettingsFile();
-            PrintCountries();
+            ExecutaProcesso();
+        }
+
+        static void ExecutaProcesso()
+        {
+            var dal = new CLUBECONTEXTO(_contexto);
+            var listaPessoas = dal.GetList();
+
+            listaPessoas.ForEach(item =>
+            {
+
+                // 1 /clube/v1/authenticate/{tokenEmpresa}  - retornar Token 
+
+                // 2 /clube/v1/company/{tokenEmpresa}/user - atualiza pessoa
+
+
+
+                
+            });
+
+
+
+            Console.WriteLine("Press any key to stop.");
+            Console.ReadKey();
         }
 
         static void GetAppSettingsFile()
@@ -20,23 +45,12 @@ namespace ConsoleApp.ClubeAtualizaDados
             var builder = new ConfigurationBuilder()
                                  .SetBasePath(Directory.GetCurrentDirectory())
                                  .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-            _iconfiguration = builder.Build();
+            _contexto = builder.Build();
         }
 
-        static void PrintCountries()
-        {
-            var countryDAL = new CLUBECONTEXTO(_iconfiguration);
-            var listCountryModel = countryDAL.GetList();
-
-            listCountryModel.ForEach(item =>
-            {
-                Console.WriteLine(item);
-            });
-
-            Console.WriteLine("Press any key to stop.");
-            Console.ReadKey();
-        }
     }
 
+
+ 
 }
 

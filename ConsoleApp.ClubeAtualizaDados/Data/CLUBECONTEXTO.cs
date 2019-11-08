@@ -1,13 +1,14 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Text;
+
 
 namespace ConsoleApp.ClubeAtualizaDados.DAL
 {
-    class CLUBECONTEXTO
+    public class CLUBECONTEXTO 
     {
         private string _connectionString;
 
@@ -17,30 +18,38 @@ namespace ConsoleApp.ClubeAtualizaDados.DAL
         }
         public List<PESSOACLUBE> GetList()
         {
-            var listCountryModel = new List<PESSOACLUBE>();
+            var list = new List<PESSOACLUBE>();
             try
             {
                 using (SqlConnection con = new SqlConnection(_connectionString))
                 {
-                    SqlCommand cmd = new SqlCommand("SP_COUNTRY_GET_LIST", con);
+
+                    SqlCommand cmd = new SqlCommand("P_CLUBEVANTAGEM_ListaPessoa", con);
                     cmd.CommandType = CommandType.StoredProcedure;
                     con.Open();
                     SqlDataReader rdr = cmd.ExecuteReader();
+
                     while (rdr.Read())
                     {
-                        listCountryModel.Add(new PESSOACLUBE
+                        list.Add(new PESSOACLUBE
                         {
-                           //CAMPOS
+                            NM_PESSOA = rdr[0].ToString(),
+                            DS_EMAIL = rdr[1].ToString(),
+                            DT_NASCIMENTO = rdr[2].ToString(),
+                            NR_CNPJ_CPF = rdr[3].ToString()
                         });
                     }
+
                 }
             }
             catch (Exception ex)
             {
                 throw ex;
             }
-            return listCountryModel;
+            return list;
         }
+
+
 
     }
 }
