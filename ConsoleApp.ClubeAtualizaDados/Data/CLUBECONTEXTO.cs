@@ -6,7 +6,7 @@ using System.Data;
 using System.Data.SqlClient;
 
 
-namespace ConsoleApp.ClubeAtualizaDados.DAL
+namespace ConsoleApp.ClubeAtualizaDados.Data
 {
     public class CLUBECONTEXTO 
     {
@@ -48,6 +48,17 @@ namespace ConsoleApp.ClubeAtualizaDados.DAL
             }
             return list;
         }
+
+
+        public static string LimpaToken(string data)
+        {
+            var token1 = data.Split("token=");
+            var token2 = token1[1].Split("&company=");
+            var r = token2[0];
+
+            return r;
+        }
+
 
 
 
