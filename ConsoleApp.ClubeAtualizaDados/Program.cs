@@ -20,10 +20,12 @@ namespace ConsoleApp.ClubeAtualizaDados
         private const string UrlAtualiza = "https://clubecore-staging.convenia.com.br/clube/v1/company/d8ec2e40-294a-11e9-9724-f11bc9c05a54/user";
 
 
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             GetAppSettingsFile();
-            ExecutaProcessoAsync();
+
+            Console.WriteLine("Inicio: " + DateTime.Now);
+            ExecutaProcessoAsync().Wait();
         }
 
         public static async Task ExecutaProcessoAsync()
@@ -66,6 +68,7 @@ namespace ConsoleApp.ClubeAtualizaDados
 
             }
 
+            Console.WriteLine("Final: " + DateTime.Now);
             Console.ReadKey();
         }
 
