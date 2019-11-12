@@ -75,14 +75,18 @@ namespace ConsoleApp.ClubeAtualizaDados
                     var result = client.PutAsync(UrlAtualiza, content);
                     string contents2 = await result.Result.Content.ReadAsStringAsync();
 
+                   
 
+                    USUARIORESPOSTA.Message message = JsonConvert.DeserializeObject<USUARIORESPOSTA.Message>(contents2);
+
+             
                     using (StreamWriter file = new StreamWriter(@"C:\git\ConsoleApp.ClubeAtualizaDados\txt\log.txt", true))
                     {
                         file.WriteLine(DateTime.Now + " Linha:" + conta + " Email: " + item.NM_PESSOA);
                         file.WriteLine(DateTime.Now + " " + contents2.ToString());
                     }
 
-                    Console.WriteLine(DateTime.Now + " Linha Tabela: " + item.LINHA + " Email: " + item.NM_PESSOA);
+                    Console.WriteLine(DateTime.Now + " Linha Tabela: " + item.LINHA + " Nome: " + item.NM_PESSOA + " Message: " + message.message);
                 }
 
                 Console.WriteLine("Final: " + DateTime.Now);
@@ -91,6 +95,7 @@ namespace ConsoleApp.ClubeAtualizaDados
             catch (Exception e )
             {
                 Console.WriteLine(e.Message);
+                Console.ReadKey();
             }
           
         }
