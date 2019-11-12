@@ -1,0 +1,36 @@
+--SELECT * FROM PESSOA WHERE NR_CNPJ_CPF = '00248792903'
+--SELECT * FROM USUARIO_SISTEMA WHERE NM_USUARIO = 'ARIS@GMAIL.COM'
+
+CREATE PROCEDURE P_CLUBEVANTAGEM_ListaPessoa as 
+
+select * from CLUBEVANTAGEM_ListaPessoa
+WHERE #ROW >= 891 
+AND #ROW < = 2000
+
+
+DROP TABLE CLUBEVANTAGEM_ListaPessoa
+
+
+
+select  ROW_NUMBER() OVER(ORDER BY P.NM_PESSOA,c.col2  DESC) AS LINHA,
+        P.NM_PESSOA,
+		P.DS_EMAIL,
+		CAST(ISNULL(P.DT_NASCIMENTO,'1900-01-01') AS DATE) AS DT_NASCIMENTO,
+		c.col2 as NR_CNPJ_CPF
+		into CLUBEVANTAGEM_ListaPessoa
+   from CARGACLUBEITURAN c
+	inner join PESSOA p 
+		on substring(substring(replace(replace(c.col2,'.',''),'-',''),0,10),3,10) = p.CD_PESSOA
+		AND CHARINDEX('@',P.DS_EMAIL) > 0
+		
+   group by p.CD_PESSOA, 
+			P.NM_PESSOA,
+			P.DS_EMAIL,
+			P.DT_NASCIMENTO,
+			c.col2
+
+
+
+
+
+

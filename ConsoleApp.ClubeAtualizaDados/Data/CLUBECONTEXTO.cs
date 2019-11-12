@@ -33,10 +33,11 @@ namespace ConsoleApp.ClubeAtualizaDados.Data
                     {
                         list.Add(new PESSOACLUBE
                         {
-                            NM_PESSOA = rdr[0].ToString(),
-                            DS_EMAIL = rdr[1].ToString(),
-                            DT_NASCIMENTO = rdr[2].ToString(),
-                            NR_CNPJ_CPF = rdr[3].ToString()
+                            LINHA  = Convert.ToInt32(rdr[0]),
+                            NM_PESSOA = rdr[1].ToString(),
+                            DS_EMAIL = rdr[2].ToString(),
+                            DT_NASCIMENTO = rdr[3].ToString(),
+                            NR_CNPJ_CPF = rdr[4].ToString()
                         });
                     }
 

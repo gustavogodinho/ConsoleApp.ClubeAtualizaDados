@@ -16,8 +16,14 @@ namespace ConsoleApp.ClubeAtualizaDados
         private static IConfiguration _contexto;
         static HttpClient client = new HttpClient();
         private const string JsonMediaType = "application/json";
-        private const string UrlAut = "https://clubecore-staging.convenia.com.br/clube/v1/authenticate/d8ec2e40-294a-11e9-9724-f11bc9c05a54";
-        private const string UrlAtualiza = "https://clubecore-staging.convenia.com.br/clube/v1/company/d8ec2e40-294a-11e9-9724-f11bc9c05a54/user";
+        
+        //Homol
+        //private const string UrlAut = "https://clubecore-staging.convenia.com.br/clube/v1/authenticate/d8ec2e40-294a-11e9-9724-f11bc9c05a54";
+        //private const string UrlAtualiza = "https://clubecore-staging.convenia.com.br/clube/v1/company/d8ec2e40-294a-11e9-9724-f11bc9c05a54/user";
+
+        //Prod
+        private const string UrlAut = "https://clubecore.convenia.com.br/clube/v1/authenticate/40853920-23c5-11e9-95b8-e3049f7cd40e";
+        private const string UrlAtualiza = "https://clubecore.convenia.com.br/clube/v1/company/40853920-23c5-11e9-95b8-e3049f7cd40e/user";
 
 
         public static void Main(string[] args)
@@ -30,46 +36,63 @@ namespace ConsoleApp.ClubeAtualizaDados
 
         public static async Task ExecutaProcessoAsync()
         {
-
-            var dal = new CLUBECONTEXTO(_contexto);
-            var listaPessoas = dal.GetList();
-
-
-            foreach (var item in listaPessoas)
+            try
             {
-                string objAut = JsonConvert.SerializeObject(new { document = item.NR_CNPJ_CPF });
-                StringContent contentAut = StringContent(objAut);
+                var dal = new CLUBECONTEXTO(_contexto);
+                var listaPessoas = dal.GetList();
+                int conta = 0;
 
-                var response = client.PostAsync(UrlAut, contentAut);
-                string contents = await response.Result.Content.ReadAsStringAsync();
-
-
-                AUTENTICACAORESPOSTA ret = JsonConvert.DeserializeObject<AUTENTICACAORESPOSTA>(contents);
-                string r = ret.data;
-                string token = CLUBECONTEXTO.LimpaToken(r);
-
-
-                
-                string objAtualizar = JsonConvert.SerializeObject(new
+                foreach (var item in listaPessoas)
                 {
-                    email = item.DS_EMAIL,
-                    name = item.NM_PESSOA,
-                    birthday = Convert.ToDateTime(item.DT_NASCIMENTO).ToString("yyyy-MM-dd"),
-                    news = 0
-                });
 
 
-                StringContent content = StringContent(objAtualizar);
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                var result = client.PutAsync(UrlAtualiza, content);
-                string contents2 = await result.Result.Content.ReadAsStringAsync();
+                    conta += 1;
+
+                    string objAut = JsonConvert.SerializeObject(new { document = item.NR_CNPJ_CPF });
+                    StringContent contentAut = StringContent(objAut);
+
+                    var response = client.PostAsync(UrlAut, contentAut);
+                    string contents = await response.Result.Content.ReadAsStringAsync();
+
+
+                    AUTENTICACAORESPOSTA ret = JsonConvert.DeserializeObject<AUTENTICACAORESPOSTA>(contents);
+                    string r = ret.data;
+                    string token = CLUBECONTEXTO.LimpaToken(r);
 
 
 
+                    string objAtualizar = JsonConvert.SerializeObject(new
+                    {
+                        email = item.DS_EMAIL,
+                        name = item.NM_PESSOA,
+                        birthday = Convert.ToDateTime(item.DT_NASCIMENTO).ToString("yyyy-MM-dd"),
+                        news = 0
+                    });
+
+
+                    StringContent content = StringContent(objAtualizar);
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    var result = client.PutAsync(UrlAtualiza, content);
+                    string contents2 = await result.Result.Content.ReadAsStringAsync();
+
+
+                    using (StreamWriter file = new StreamWriter(@"C:\git\ConsoleApp.ClubeAtualizaDados\txt\log.txt", true))
+                    {
+                        file.WriteLine(DateTime.Now + " Linha:" + conta + " Email: " + item.NM_PESSOA);
+                        file.WriteLine(DateTime.Now + " " + contents2.ToString());
+                    }
+
+                    Console.WriteLine(DateTime.Now + " Linha Tabela: " + item.LINHA + " Email: " + item.NM_PESSOA);
+                }
+
+                Console.WriteLine("Final: " + DateTime.Now);
+                Console.ReadKey();
             }
-
-            Console.WriteLine("Final: " + DateTime.Now);
-            Console.ReadKey();
+            catch (Exception e )
+            {
+                Console.WriteLine(e.Message);
+            }
+          
         }
 
         private static void GetAppSettingsFile()
