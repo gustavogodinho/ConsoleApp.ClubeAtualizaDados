@@ -3,12 +3,10 @@ using ConsoleApp.ClubeAtualizaDados.Model;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace ConsoleApp.ClubeAtualizaDados
@@ -40,7 +38,7 @@ namespace ConsoleApp.ClubeAtualizaDados
             Console.WriteLine("Final: " + DateTime.Now);
             Console.ReadKey();
         }
-        
+
 
         public static void ExecutaProcesso()
         {
@@ -48,9 +46,9 @@ namespace ConsoleApp.ClubeAtualizaDados
             {
                 var dal = new CLUBECONTEXTO(_contexto);
                 var listaPessoas = dal.GetList();
-               
+
                 Parallel.ForEach(listaPessoas, Execucao);
-                
+
             }
             catch (Exception e)
             {
@@ -62,7 +60,7 @@ namespace ConsoleApp.ClubeAtualizaDados
 
         public static async void Execucao(PESSOACLUBE item)
         {
-            
+
             string objAut = JsonConvert.SerializeObject(new { document = item.NR_CNPJ_CPF });
             StringContent contentAut = StringContent(objAut);
 
@@ -72,6 +70,8 @@ namespace ConsoleApp.ClubeAtualizaDados
             if (string.IsNullOrEmpty(contents))
             {
                 Console.WriteLine("Erro ao executar: " + item.NR_CNPJ_CPF);
+
+
             }
             else
             {
@@ -113,11 +113,11 @@ namespace ConsoleApp.ClubeAtualizaDados
                         string contents2 = await result.Result.Content.ReadAsStringAsync();
 
 
-                        Console.WriteLine("Count: "+  conta + " " + DateTime.Now + " Linha Tabela: " + item.LINHA + " Nome: " + item.NM_PESSOA + " Message: " + contents2.ToString());
+                        Console.WriteLine("Count: " + conta + " " + DateTime.Now + " Linha Tabela: " + item.LINHA + " Nome: " + item.NM_PESSOA + " Message: " + contents2.ToString());
                     }
-                    
+
                 }
-                
+
             }
         }
 
