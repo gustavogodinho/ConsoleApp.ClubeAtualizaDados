@@ -53,6 +53,7 @@ namespace ConsoleApp.ClubeAtualizaDados
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
                 Console.ReadKey();
             }
 
@@ -60,80 +61,103 @@ namespace ConsoleApp.ClubeAtualizaDados
 
         public static async void Execucao(PESSOACLUBE item)
         {
-
-            string objAut = JsonConvert.SerializeObject(new { document = item.NR_CNPJ_CPF });
-            StringContent contentAut = StringContent(objAut);
-
-            var response = client.PostAsync(UrlAut, contentAut);
-            string contents = await response.Result.Content.ReadAsStringAsync();
-
-            if (string.IsNullOrEmpty(contents))
+            try
             {
-                Console.WriteLine("Erro ao executar: " + item.NR_CNPJ_CPF);
+                string objAut = JsonConvert.SerializeObject(new { document = item.NR_CNPJ_CPF });
+                StringContent contentAut = StringContent(objAut);
 
+                var response = client.PostAsync(UrlAut, contentAut);
+                string contents = await response.Result.Content.ReadAsStringAsync();
 
-            }
-            else
-            {
-                conta++;
-
-                Console.WriteLine(DateTime.Now + " Autenticação: " + contents);
-
-                AUTENTICACAORESPOSTA ret = new AUTENTICACAORESPOSTA();
-
-                try
+                if (string.IsNullOrEmpty(contents))
                 {
-                    ret = JsonConvert.DeserializeObject<AUTENTICACAORESPOSTA>(contents);
+                    Console.WriteLine("Erro ao executar: " + item.NR_CNPJ_CPF);
+
 
                 }
-                catch
+                else
                 {
-                    Execucao(item);
-                }
-                finally
-                {
-                    if (ret.data != null)
+                    conta++;
+
+                    Console.WriteLine(DateTime.Now + " Autenticação: " + contents);
+
+                    AUTENTICACAORESPOSTA ret = new AUTENTICACAORESPOSTA();
+
+                    try
                     {
-                        string r = ret.data;
-                        string token = CLUBECONTEXTO.LimpaToken(r);
+                        ret = JsonConvert.DeserializeObject<AUTENTICACAORESPOSTA>(contents);
 
-
-                        string objAtualizar = JsonConvert.SerializeObject(new
-                        {
-                            email = item.DS_EMAIL,
-                            name = item.NM_PESSOA,
-                            birthday = Convert.ToDateTime(item.DT_NASCIMENTO).ToString("yyyy-MM-dd"),
-                            news = 0
-                        });
-
-
-                        StringContent content = StringContent(objAtualizar);
-                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                        var result = client.PutAsync(UrlAtualiza, content);
-                        string contents2 = await result.Result.Content.ReadAsStringAsync();
-
-
-                        Console.WriteLine("Count: " + conta + " " + DateTime.Now + " Linha Tabela: " + item.LINHA + " Nome: " + item.NM_PESSOA + " Message: " + contents2.ToString());
                     }
+                    catch
+                    {
+                        Execucao(item);
+                    }
+                    finally
+                    {
+                        if (ret.data != null)
+                        {
+                            string r = ret.data;
+                            string token = CLUBECONTEXTO.LimpaToken(r);
 
+
+                            string objAtualizar = JsonConvert.SerializeObject(new
+                            {
+                                email = item.DS_EMAIL,
+                                name = item.NM_PESSOA,
+                                birthday = Convert.ToDateTime(item.DT_NASCIMENTO).ToString("yyyy-MM-dd"),
+                                news = 0
+                            });
+
+
+                            StringContent content = StringContent(objAtualizar);
+                            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                            var result = client.PutAsync(UrlAtualiza, content);
+                            string contents2 = await result.Result.Content.ReadAsStringAsync();
+
+
+                            Console.WriteLine("Count: " + conta + " " + DateTime.Now + " Linha Tabela: " + item.LINHA + " Nome: " + item.NM_PESSOA + " Message: " + contents2.ToString());
+                        }
+                    }
                 }
-
             }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.StackTrace);
+            }
+
+           
         }
 
         private static void GetAppSettingsFile()
         {
-            var builder = new ConfigurationBuilder()
-                                 .SetBasePath(Directory.GetCurrentDirectory())
-                                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-            _contexto = builder.Build();
+            try
+            {
+                var builder = new ConfigurationBuilder()
+                                .SetBasePath(Directory.GetCurrentDirectory())
+                                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+                _contexto = builder.Build();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.StackTrace);
+            }
+
+
         }
 
         public static StringContent StringContent(string obj)
         {
-            StringContent contentAut = new StringContent(obj, Encoding.UTF8, JsonMediaType);
+            try
+            {
+                StringContent contentAut = new StringContent(obj, Encoding.UTF8, JsonMediaType);
+                return contentAut;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
 
-            return contentAut;
+
         }
 
 
